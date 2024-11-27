@@ -34,3 +34,8 @@ plt.show()'''
 NEEDS:
 - 
 '''
+
+wavelength = 0
+velocity = 0
+frequency = 0
+r_freq = 0
