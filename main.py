@@ -23,7 +23,7 @@ def load_audio():
 ####################################################################################
 # Create the main window
 window = tk.Tk()
-window.title("My First GUI")
+window.title("SPIDAM V13 Audio Loader")
 
 # Set the window size
 window.geometry("300x200")
