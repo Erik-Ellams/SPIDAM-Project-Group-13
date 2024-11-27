@@ -44,3 +44,35 @@ def freq_check():
     global target_freq
     target_freq = find_targ_freq(freqs)
     index_of_freq = np.where(freqs == target_freq)[0][0]
+    data_for_freq = spectrum[index_of_freq]
+    data_in_db_fun = 10 * np.log10(data_for_freq)
+    return data_in_db_fun
+
+data_in_db = freq_check()
+plt.figure(2)
+
+plt.plot(t, data_in_db, linewidth=1, alpha=0.7, color='#004bc6')
+
+plt.xlabel('Time (s)')
+plt.ylabel('Power (dB)')
+
+index_of_max = np.argmax(data_in_db)
+value_of_max = data_in_db[index_of_max]
+plt.plot(t[index_of_max], data_in_db[index_of_max], 'go')
+
+sliced_array = data_in_db[index_of_max:]
+value_of_max_less_5 = value_of_max - 5
+
+def find_nearest_value(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+value_of_max_less_5 = find_nearest_value(sliced_array, value_of_max_less_5)
+index_of_max_less_5 = np.where(data_in_db == value_of_max_less_5)
+plt.plot(t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yo')
+
+value_of_max_less_25 = value_of_max - 25
+value_of_max_less_25 = find_nearest_value(sliced_array, value_of_max_less_25)
+index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)
+plt.plot(t[index_of_max_less_25], data_)
