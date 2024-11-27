@@ -30,9 +30,12 @@ r_freq = 0'''
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
+from pydub import AudioSegment
 
 wav_file_name = "16bit4chan.wav"
 sample_rate, data = wavfile.read(wav_file_name)
+spectrum, freqs, t, im = plt.specgram(data, Fs=sample_rate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+
 
 def find_targ_freq(freqs):
     for x in freqs:
