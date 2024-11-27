@@ -16,7 +16,7 @@ class plot:
         self.time = time
         self.frequency = frequency
     def display(self):
-        plt.plot(frequency_low, time_low)
+        plt.plot(self.frequency, self.time)
         plt.xlabel("Time [s]")
         plt.ylabel("Frequency [Hz]")
         plt.show()
