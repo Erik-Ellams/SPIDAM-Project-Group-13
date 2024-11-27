@@ -75,4 +75,14 @@ plt.plot(t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yo')
 value_of_max_less_25 = value_of_max - 25
 value_of_max_less_25 = find_nearest_value(sliced_array, value_of_max_less_25)
 index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)
-plt.plot(t[index_of_max_less_25], data_)
+plt.plot(t[index_of_max_less_25], data_in_db[index_of_max_less_25], 'ro')
+
+rt20 = (t[index_of_max_less_5] - t[index_of_max_less_25])[0]
+
+rt60 = 3 * rt20
+
+plt.grid()
+
+plt.show()
+
+print(f'The RT60 reverb time at freq {int(target_freq)}Hz is {round(abs(rt60), 2)}')
