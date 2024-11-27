@@ -1,20 +1,15 @@
-import os
 import tkinter as tk
-from tkinter import filedialog
 
-def open_exe_from_explorer():
-    """Opens an .exe file selected by the user from the file explorer."""
+# Create the main window
+window = tk.Tk()
+window.title("My First GUI")
 
-    file_path = filedialog.askopenfilename(filetypes=[("Executable Files", "*.exe")])
+# Set the window size
+window.geometry("300x200")
 
-    if file_path:
-        os.startfile(file_path)
+# Create a label
+label = tk.Label(window, text="Hello, world!")
+label.pack()
 
-# Create a simple GUI window
-root = tk.Tk()
-root.withdraw()  # Hide the main window
-
-# Trigger the file selection dialog
-open_exe_from_explorer()
-
-root.mainloop()  # Keep the script running (though the main window is hidden)
+# Start the event loop
+window.mainloop()
