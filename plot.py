@@ -2,39 +2,25 @@ import tkinter as tk
 import matplotlib.pyplot as plt
 import numpy as np
 
-time = np.array([0, 6])
-frequency = np.array([0, 250])
+time_low = np.array([0, 6])
+frequency_low = np.array([0, 250])
 
+time_med = np.array([0, 6])
+frequency_med = np.array([0, 250])
 
+time_high = np.array([0, 6])
+frequency_high = np.array([0, 250])
 
-# Function for button click (placeholder for now)
-def load_audio():
-  # Add your audio file
-  print("Loading audio...")  #Switch this out for the name of the file
+class plot:
+    def __init__(self, time, frequency):
+        self.time = time
+        self.frequency = frequency
+    def display(self):
+        plt.plot(frequency_low, time_low)
+        plt.show()
 
-#Function to show low frequency graph
-def show_low_frequency():
-    plt.plot(frequency, time)
-    plt.show()
+low = plot(time_low, frequency_low)
+med = plot(time_med, frequency_med)
+high = plot(time_high, frequency_high)
 
-####################################################################################
-# Create the main window
-window = tk.Tk()
-window.title("My First GUI")
-
-# Set the window size
-window.geometry("300x200")
-
-# Create a label
-label = tk.Label(window, text="Hello, world!")
-label.pack()
-
-# Create a button
-load_button = tk.Button(window, text="Load Audio", command=load_audio)
-load_button.pack()  # Position the button
-
-load_freq_button = tk.Button(window, text="Plot Low Frequency", command=show_low_frequency)
-load_freq_button.pack()
-
-# Start the event loop
-window.mainloop()
+low.display()
