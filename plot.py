@@ -1,6 +1,7 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.io import wavfile
 
 time_low = np.array([0, 6])
 frequency_low = np.array([0, 250])
@@ -17,9 +18,11 @@ class plot:
         self.frequency = frequency
     def display(self):
         plt.plot(self.frequency, self.time)
+        sample_rate, data = wavfile.read('._16bit4chan.wav')
+        spectrum, freqs, t, im = plt.specgram(data, Fs=sample_rate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+        plt.title("Frequency over time")
         plt.xlabel("Time [s]")
         plt.ylabel("Frequency [Hz]")
-        plt.show()
         plt.show()
 
 low = plot(time_low, frequency_low)
