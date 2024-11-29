@@ -135,8 +135,20 @@ window.geometry("700x600")
 # Create a StringVar for the notification text
 notification_var = tk.StringVar()
 
+
+
 # Create a StringVar to hold the selected file name
 file_name_var = tk.StringVar()
+
+
+# Create a LabelFrame for the file name
+file_name_frame = ttk.LabelFrame(window, text="File Name")
+file_name_frame.pack(pady=10, fill=tk.X)
+
+# Add a label inside the frame to display the file name
+file_name_label = tk.Label(file_name_frame, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
+file_name_label.pack(padx=10, pady=5)
+
 
 # Create the notification bar
 notification_bar = tk.Frame(window, relief=tk.SUNKEN, bd=1)
@@ -167,8 +179,8 @@ duration_label = ttk.Label(duration_frame, text="")
 duration_label.pack()
 
 # Create a label to display the selected file name
-file_name_label = tk.Label(window, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
-file_name_label.pack()  # Position the label
+#file_name_label = tk.Label(window, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
+#file_name_label.pack()  # Position the label
 
 # Create a frame for the waveform display
 waveform_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
