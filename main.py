@@ -95,9 +95,17 @@ file_name_var = tk.StringVar()
 notification_bar = tk.Frame(window, relief=tk.SUNKEN, bd=1)
 notification_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-# Create a label for the notification text
-notification_text = tk.Label(notification_bar, textvariable=notification_var)
-notification_text.pack(side=tk.LEFT)
+# Create a frame for the notification area
+notification_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
+notification_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+# Add a label above the notification frame for the title
+notification_title = tk.Label(window, text="Notification Bar", font=("Arial", 10, "bold"))
+notification_title.pack(side=tk.BOTTOM)
+
+# Add a label inside the notification frame to display the text
+notification_text = tk.Label(notification_frame, textvariable=notification_var)
+notification_text.pack(side=tk.LEFT, padx=5, pady=5)
 
 # Create a "Load Audio" button
 load_button = tk.Button(window, text="Load Audio", command=load_audio)
