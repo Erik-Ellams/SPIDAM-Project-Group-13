@@ -1,64 +1,79 @@
 import tkinter as tk
+import ffmpeg
+import tempfile
+import os
+import subprocess
 from tkinter import filedialog, ttk
 from pydub import AudioSegment
 
+
 def load_audio():
-    # Open a file dialog to select an audio file
+    """
+    Opens a file dialog to select an audio file and starts the processing chain.
+    """
     file_path = filedialog.askopenfilename(
         title="Select Audio File",
         filetypes=(("Audio Files", "*.*"), ("All Files", "*.mp3 *.wav *.ogg"))
     )
     if file_path:
         file_name_var.set(file_path)  # Set the file name in the variable
-    # Replace with your audio loading logic
-    if file_name_var.get():
-        print(f"Loading audio: {file_name_var.get()}")  # Placeholder message
-        notification_var.set(f"Loading audio: {file_name_var.get()}")
-        clear_notification()
+        notification_var.set(f"Loading audio: {file_path}")
 
-        # Automatically call convert_to_wav_and_get_duration
-        convert_to_wav_and_get_duration()
-
+        # Start the processing chain
+        output_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
+        convert_to_wav(file_path, output_path)
     else:
         notification_var.set("No file selected!")
-        clear_notification()
 
 
-def convert_to_wav_and_get_duration():
-    # Check if a file is selected
-    if file_name_var.get():
-        try:
-            # Load the selected audio file
-            audio = AudioSegment.from_file(file_name_var.get())
+def convert_to_wav(file_path, output_path):
+    """
+    Converts the audio file at 'file_path' to WAV format and saves it to 'output_path'.
+    """
+    try:
+        audio = AudioSegment.from_file(file_path)
+        audio.export(output_path, format="wav")
+        notification_var.set("Converted to WAV format.")
 
-            # Modify output path to match original file with .wav extension
-            original_path = file_name_var.get()
-            # Replace backslashes with forward slashes if needed
-            original_path = original_path.replace("\\", "/")  # For Windows compatibility
-            output_path = f"{original_path[:-4]}.wav"  # Change extension to .wav
+        # Proceed to remove metadata
+        metadata_free_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
+        remove_metadata(output_path, metadata_free_path)
+    except Exception as e:
+        notification_var.set(f"Error in conversion: {e}")
 
-            # Convert to .wav and save
-            audio.export(output_path, format="wav")
 
-            # Get the duration in seconds
-            duration_seconds = len(audio) / 1000  # Audio length in milliseconds
+def remove_metadata(source_file, destination_file):
+    """
+    Removes metadata from the 'source_file' and saves the result to 'destination_file'.
+    """
+    try:
+        # Remove existing temporary file, if any
+        if os.path.exists(destination_file):
+            os.remove(destination_file)
 
-            # Display the duration in the notification bar
-            notification_var.set(f"Converted to .wav. Duration: {duration_seconds:.2f} seconds")
+        subprocess.run(["ffmpeg", "-y", "-i", source_file, "-map_metadata", "-1", destination_file], check=True)
+        notification_var.set("Metadata removed.")
 
-            # Display the duration in the Audio Duration frame
-            duration_label.config(text=f"Duration: {duration_seconds:.2f} seconds")
+        # Proceed to get duration
+        get_duration(destination_file)
+    except Exception as e:
+        notification_var.set(f"Error in removing metadata: {e}")
 
-        except Exception as e:
-            notification_var.set(f"Error processing file: {e}")
-    else:
-        notification_var.set("No file selected!")
-    clear_notification()
 
-def clear_notification():
-    #Clear the notification bar after a short delay
-    #window.after(10000, lambda: notification_var.set(""))  # 10 seconds delay
-    print("Hello")
+def get_duration(file_path):
+    """
+    Gets the duration of the provided audio file (assuming it's already converted to WAV).
+    """
+    try:
+        # Get the duration using pydub
+        audio = AudioSegment.from_file(file_path)
+        duration_seconds = len(audio) / 1000  # Audio length in milliseconds
+
+        # Display the duration in the notification bar
+        notification_var.set(f"Duration: {duration_seconds:.2f} seconds")
+        duration_label.config(text=f"Duration: {duration_seconds:.2f} seconds")
+    except Exception as e:
+        notification_var.set(f"Error getting duration: {e}")
 
 
 ######################################################################################
@@ -95,9 +110,6 @@ duration_frame.pack()
 # Create a label to display the duration
 duration_label = ttk.Label(duration_frame, text="")
 duration_label.pack()
-
-# Update the duration label
-#duration_label.config(text=f"Duration: {duration_seconds:.2f} seconds")
 
 # Create a label to display the selected file name
 file_name_label = tk.Label(window, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
