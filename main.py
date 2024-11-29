@@ -107,7 +107,7 @@ def display_waveform(file_path):
         ax.plot(time_axis, audio_samples, color="blue")
         ax.set_title("Waveform")
         ax.set_xlabel("Time (s)")
-        ax.set_ylabel("Amplitude")
+        ax.set_ylabel("Amplitude (dB)")
 
         # Clear existing widgets in the frame
         for widget in waveform_frame.winfo_children():
@@ -130,7 +130,7 @@ window = tk.Tk()
 window.title("Audio Converter")
 
 # Set the window size
-window.geometry("600x500")
+window.geometry("700x600")
 
 # Create a StringVar for the notification text
 notification_var = tk.StringVar()
