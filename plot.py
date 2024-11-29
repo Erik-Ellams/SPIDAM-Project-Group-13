@@ -25,8 +25,7 @@ class plot:
             cbar = plt.colorbar(im)
             cbar.set_label('Intensity (dB)')
 
-
-            plt.title("Frequency over time")
+            plt.title("Spectrogram")
             plt.xlabel("Time [s]")
             plt.ylabel("Frequency [Hz]")
             plt.show()
@@ -36,6 +35,19 @@ class plot:
             clear_notification()
 
 audio_name = "none"
+
+def is_valid_wav(file_path):
+    with open(file_path, 'rb') as f:
+        header = f.read(4)
+        return header in [b'RIFF', b'RIFX', b'RF64']
+
+def check_ffmpeg():
+    try:
+        subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        return True
+    except FileNotFoundError:
+        notification_var.set("FFmpeg is not installed. Please install it and try again.")
+        return False
 
 def load_audio():
     global audio_name
@@ -54,10 +66,19 @@ def load_audio():
             audio_name = convert_to_wav(file_path, converted_file)
             if audio_name:
                 notification_var.set(f"Converted and loaded: {os.path.basename(audio_name)}")
+                file_name_var.set(audio_name)
             else:
                 notification_var.set("Conversion failed!")
                 audio_name = "none"
-        file_name_var.set(file_path)  # Set the file name in the variable
+                return
+        else:
+            if is_valid_wav(file_path):
+                file_name_var.set(file_path)
+                audio_name = file_name_var.get()
+                notification_var.set(f"Loaded: {os.path.basename(file_name_var.get())}")
+            else:
+                notification_var.set("Invalid WAV file selected!")
+                audio_name = "none"
     # Replace with your audio loading logic
     if file_name_var.get():
         print(f"Loading audio: {file_name_var.get()}")  # Placeholder message
@@ -65,6 +86,7 @@ def load_audio():
         notification_var.set(f"Loading audio: {file_name_var.get()}")
         clear_notification()
     else:
+        is_valid_wav(file_path)
         notification_var.set("No file selected!")
         clear_notification()
 
@@ -76,6 +98,7 @@ def convert_to_wav(input_file, output_file):
     """
     Converts an audio file to WAV format using FFmpeg.
     """
+
     try:
         subprocess.run(
             ['ffmpeg', '-y', '-i', input_file, '-ar', '44100', '-ac', '1', output_file],
@@ -83,15 +106,25 @@ def convert_to_wav(input_file, output_file):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        return output_file
+        if os.path.exists(output_file):
+            return output_file
+        else:
+            print("Conversion failed: Output file not created.")
+            return None
     except subprocess.CalledProcessError as e:
         print(f"Error during conversion: {e.stderr.decode()}")
         return None
 
 
 def plot_low_frequency():
-    low = plot(audio_name)
-    low.display()
+    if audio_name and os.path.exists(audio_name):
+        notification_var.set("Processing spectrogram...")
+        window.update_idletasks()  # Update UI before processing
+        low = plot(audio_name)
+        low.display()
+        notification_var.set("Spectrogram displayed.")
+    else:
+        notification_var.set("No valid audio file loaded!")
 
 ######################################################################################
 
@@ -125,8 +158,8 @@ load_button = tk.Button(window, text="Load Audio", command=load_audio)
 load_button.pack()  # Position the button
 
 #Create plot button
-load_button = tk.Button(window, text="Plot Low Frequency", command=plot_low_frequency)
-load_button.pack()
+plot_button = tk.Button(window, text="Plot Low Frequency", command=plot_low_frequency)
+plot_button.pack()
 
 # Start the event loop
 window.mainloop()
