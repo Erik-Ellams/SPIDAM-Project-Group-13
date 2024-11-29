@@ -1,10 +1,13 @@
 import tkinter as tk
-import ffmpeg
+from tkinter import filedialog, ttk
+from pydub import AudioSegment
 import tempfile
 import os
 import subprocess
-from tkinter import filedialog, ttk
-from pydub import AudioSegment
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
+import wave
 
 
 def load_audio():
@@ -56,6 +59,10 @@ def remove_metadata(source_file, destination_file):
 
         # Proceed to get duration
         get_duration(destination_file)
+
+        # Display the waveform
+        display_waveform(destination_file)
+
     except Exception as e:
         notification_var.set(f"Error in removing metadata: {e}")
 
@@ -75,6 +82,46 @@ def get_duration(file_path):
     except Exception as e:
         notification_var.set(f"Error getting duration: {e}")
 
+def display_waveform(file_path):
+    """
+    Displays the waveform of the .wav file in the GUI.
+    """
+    try:
+        # Read the WAV file
+        with wave.open(file_path, "r") as wav_file:
+            n_frames = wav_file.getnframes()
+            n_channels = wav_file.getnchannels()
+            framerate = wav_file.getframerate()
+            audio_data = wav_file.readframes(n_frames)
+
+        # Convert audio data to numpy array
+        audio_samples = np.frombuffer(audio_data, dtype=np.int16)
+
+        # If the audio has multiple channels, take the first one
+        if n_channels > 1:
+            audio_samples = audio_samples[::n_channels]
+
+        # Create the waveform plot
+        fig, ax = plt.subplots(figsize=(5, 2))
+        time_axis = np.linspace(0, len(audio_samples) / framerate, num=len(audio_samples))
+        ax.plot(time_axis, audio_samples, color="blue")
+        ax.set_title("Waveform")
+        ax.set_xlabel("Time (s)")
+        ax.set_ylabel("Amplitude")
+
+        # Clear existing widgets in the frame
+        for widget in waveform_frame.winfo_children():
+            widget.destroy()
+
+        # Embed the plot in the tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=waveform_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        notification_var.set("Waveform displayed.")
+    except Exception as e:
+        notification_var.set(f"Error displaying waveform: {e}")
+
 
 ######################################################################################
 
@@ -83,7 +130,7 @@ window = tk.Tk()
 window.title("Audio Converter")
 
 # Set the window size
-window.geometry("500x400")
+window.geometry("600x500")
 
 # Create a StringVar for the notification text
 notification_var = tk.StringVar()
@@ -122,6 +169,10 @@ duration_label.pack()
 # Create a label to display the selected file name
 file_name_label = tk.Label(window, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
 file_name_label.pack()  # Position the label
+
+# Create a frame for the waveform display
+waveform_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
+waveform_frame.pack(fill=tk.BOTH, expand=True, pady=10)
 
 # Start the event loop
 window.mainloop()
