@@ -46,6 +46,9 @@ def convert_to_wav_and_get_duration():
             # Display the duration in the notification bar
             notification_var.set(f"Converted to .wav. Duration: {duration_seconds:.2f} seconds")
 
+            # Display the duration in the Audio Duration frame
+            duration_label.config(text=f"Duration: {duration_seconds:.2f} seconds")
+
         except Exception as e:
             notification_var.set(f"Error processing file: {e}")
     else:
