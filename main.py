@@ -169,7 +169,7 @@ def display_waveform(file_path):
 
 # Create the main window
 window = tk.Tk()
-window.title("Audio Converter")
+window.title("SPIDAM V13 Audio Loader")
 
 # Set the window size
 window.geometry("1200x1000")
