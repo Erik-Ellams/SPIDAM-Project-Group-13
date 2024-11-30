@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import wave
+import scipy.fftpack
 
 
 def load_audio():
@@ -63,6 +64,9 @@ def remove_metadata(source_file, destination_file):
         # Display the waveform
         display_waveform(destination_file)
 
+        # Calculate and display the dominant frequency
+        Frequency_Calculation(destination_file)
+
     except Exception as e:
         notification_var.set(f"Error in removing metadata: {e}")
 
@@ -81,6 +85,43 @@ def get_duration(file_path):
         duration_label.config(text=f"Duration: {duration_seconds:.2f} seconds")
     except Exception as e:
         notification_var.set(f"Error getting duration: {e}")
+
+def Frequency_Calculation(file_path):
+    """
+    Calculates the dominant frequency of the .wav file and updates the frequency_label.
+    """
+    try:
+        # Read the WAV file
+        with wave.open(file_path, "r") as wav_file:
+            n_frames = wav_file.getnframes()
+            framerate = wav_file.getframerate()
+            n_channels = wav_file.getnchannels()
+            audio_data = wav_file.readframes(n_frames)
+
+        # Convert audio data to a numpy array
+        audio_samples = np.frombuffer(audio_data, dtype=np.int16)
+
+        # If the audio has multiple channels, use only the first channel
+        if n_channels > 1:
+            audio_samples = audio_samples[::n_channels]
+
+        # Perform FFT and find frequencies
+        fft_result = np.abs(scipy.fftpack.fft(audio_samples))
+        frequencies = np.fft.fftfreq(len(fft_result), d=1 / framerate)
+
+        # Consider only positive frequencies
+        positive_freqs = frequencies[:len(frequencies) // 2]
+        positive_fft_result = fft_result[:len(fft_result) // 2]
+
+        # Find the dominant frequency
+        dominant_frequency = positive_freqs[np.argmax(positive_fft_result)]
+
+        # Update the frequency label in the GUI
+        frequency_label.config(text=f"Frequency: {dominant_frequency:.2f} Hz")
+        notification_var.set(f"Calculated Frequency: {dominant_frequency:.2f} Hz")
+
+    except Exception as e:
+        notification_var.set(f"Error in frequency calculation: {e}")
 
 def display_waveform(file_path):
     """
@@ -188,7 +229,7 @@ frequency_label = ttk.Label(frequency_frame, text="")
 frequency_label.grid(row=0, column=0, padx=10, pady=5)
 
 # Create a LabelFrame for RT60 Low (below Audio Duration and Frequency)
-rt60_low_frame = ttk.LabelFrame(window, text="RT60 LOW")
+rt60_low_frame = ttk.LabelFrame(window, text="RT60 Low")
 rt60_low_frame.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
 # Add a label to the RT60 Low frame
