@@ -57,15 +57,15 @@ class audioLoader:
         RT60HIGH_button.grid(row=4, column=0, pady=10)
 
         # Create a "Load RT60 Low" button
-        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=self.display_rt60("low"))
+        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"))
         RT60LOW_button.grid(row=4, column=1, pady=10)
 
         # Create a "Load RT60 Mid" button
-        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=self.display_rt60("medium"))
+        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=lambda: self.display_rt60("medium"))
         RT60MID_button.grid(row=4, column=2, pady=10)
 
         # Create a "Load RT60 HIGH" button
-        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=self.display_rt60("high"))
+        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
         RT60HIGH_button.grid(row=4, column=3, pady=10)
 
     def _create_result_frames(self):
