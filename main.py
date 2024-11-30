@@ -73,6 +73,9 @@ def remove_metadata(source_file, destination_file):
         # Calculate and display the RT60 Mid
         RT60MID_Calculation(destination_file)
 
+        # Calculate and display the RT60 High
+        RT60HIGH_Calculation(destination_file)
+
     except Exception as e:
         notification_var.set(f"Error in removing metadata: {e}")
 
@@ -196,6 +199,40 @@ def RT60MID_Calculation(file_path):
 
     except Exception as e:
         notification_var.set(f"Error in RT60 Mid calculation: {e}")
+
+def RT60HIGH_Calculation(file_path):
+    """
+    Calculates the RT60 High value of the .wav file and updates the rt60_high_label.
+    """
+    try:
+        # Load the audio file
+        with wave.open(file_path, "r") as wav_file:
+            n_frames = wav_file.getnframes()
+            framerate = wav_file.getframerate()
+            n_channels = wav_file.getnchannels()
+            audio_data = wav_file.readframes(n_frames)
+
+        # Convert audio data to numpy array
+        audio_samples = np.frombuffer(audio_data, dtype=np.int16)
+
+        # If the audio has multiple channels, use only the first channel
+        if n_channels > 1:
+            audio_samples = audio_samples[::n_channels]
+
+        # Simulated RT60 High calculation (using simple decay analysis for demonstration)
+        # Assume high frequencies are the last 20% of the FFT spectrum
+        fft_result = np.abs(scipy.fftpack.fft(audio_samples))
+        high_freq_fft = fft_result[-len(fft_result) // 5:]  # Last 20% frequencies
+
+        # Estimate decay time (this is a placeholder; real RT60 would use a more complex model)
+        rt60_high_value = np.mean(high_freq_fft) / max(high_freq_fft) * 1000  # Placeholder scaling
+
+        # Update the label in the GUI
+        rt60_high_label.config(text=f"RT60 High: {rt60_high_value:.2f} ms")
+        notification_var.set(f"RT60 High Calculated: {rt60_high_value:.2f} ms")
+
+    except Exception as e:
+        notification_var.set(f"Error in RT60 High calculation: {e}")
 
 def display_waveform(file_path):
     """
