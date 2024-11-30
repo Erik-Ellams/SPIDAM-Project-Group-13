@@ -101,13 +101,14 @@ def display_waveform(file_path):
         if n_channels > 1:
             audio_samples = audio_samples[::n_channels]
 
-        # Create the waveform plot
-        fig, ax = plt.subplots(figsize=(5, 2))
+        # Create the waveform plot with a larger figure size
+        fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
         time_axis = np.linspace(0, len(audio_samples) / framerate, num=len(audio_samples))
         ax.plot(time_axis, audio_samples, color="blue")
-        ax.set_title("Waveform")
-        ax.set_xlabel("Time (s)")
-        ax.set_ylabel("Amplitude (dB)")
+        ax.set_title("Waveform", fontsize=16)
+        ax.set_xlabel("Time (s)", fontsize=12)
+        ax.set_ylabel("Amplitude (dB)", fontsize=12)
+        ax.grid(True)  # Optional: Add a grid for better readability
 
         # Clear existing widgets in the frame
         for widget in waveform_frame.winfo_children():
@@ -130,61 +131,85 @@ window = tk.Tk()
 window.title("Audio Converter")
 
 # Set the window size
-window.geometry("700x600")
+window.geometry("1200x1000")
 
 # Create a StringVar for the notification text
 notification_var = tk.StringVar()
 
-
-
 # Create a StringVar to hold the selected file name
 file_name_var = tk.StringVar()
 
-
 # Create a LabelFrame for the file name
 file_name_frame = ttk.LabelFrame(window, text="File Name")
-file_name_frame.pack(pady=10, fill=tk.X)
+file_name_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
 # Add a label inside the frame to display the file name
 file_name_label = tk.Label(file_name_frame, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
-file_name_label.pack(padx=10, pady=5)
-
+file_name_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
 # Create the notification bar
 notification_bar = tk.Frame(window, relief=tk.SUNKEN, bd=1)
-notification_bar.pack(side=tk.BOTTOM, fill=tk.X)
+notification_bar.grid(row=1, column=0, sticky="ew")
 
 # Create a frame for the notification area
 notification_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
-notification_frame.pack(side=tk.BOTTOM, fill=tk.X)
-
-# Add a label above the notification frame for the title
-notification_title = tk.Label(window, text="Notification Bar", font=("Arial", 10, "bold"))
-notification_title.pack(side=tk.BOTTOM)
-
-# Add a label inside the notification frame to display the text
-notification_text = tk.Label(notification_frame, textvariable=notification_var)
-notification_text.pack(side=tk.LEFT, padx=5, pady=5)
+notification_frame.grid(row=2, column=0, sticky="ew")
 
 # Create a "Load Audio" button
 load_button = tk.Button(window, text="Load Audio", command=load_audio)
-load_button.pack()  # Position the button
+load_button.grid(row=4, column=0, pady=10)
 
 # Create a LabelFrame to display duration
 duration_frame = ttk.LabelFrame(window, text="Audio Duration")
-duration_frame.pack()
+duration_frame.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
 
 # Create a label to display the duration
 duration_label = ttk.Label(duration_frame, text="")
-duration_label.pack()
+duration_label.grid(row=0, column=0, padx=10, pady=5)
 
-# Create a label to display the selected file name
-#file_name_label = tk.Label(window, textvariable=file_name_var, wraplength=400, anchor="w", justify="left")
-#file_name_label.pack()  # Position the label
+# Create a LabelFrame to display the Highest Resonance
+frequency_frame = ttk.LabelFrame(window, text="Frequency")
+frequency_frame.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
+
+# Create a label to display the Highest Resonance
+frequency_label = ttk.Label(frequency_frame, text="")
+frequency_label.grid(row=0, column=0, padx=10, pady=5)
+
+# Create a LabelFrame for RT60 Low (below Audio Duration and Frequency)
+rt60_low_frame = ttk.LabelFrame(window, text="RT60 Low")
+rt60_low_frame.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
+
+# Add a label to the RT60 Low frame
+rt60_low_label = ttk.Label(rt60_low_frame, text="")
+rt60_low_label.grid(row=0, column=0, padx=10, pady=5)
+
+# Create a LabelFrame for RT60 Mid (below Audio Duration and Frequency)
+rt60_mid_frame = ttk.LabelFrame(window, text="RT60 Mid")
+rt60_mid_frame.grid(row=6, column=1, padx=10, pady=10, sticky="ew")
+
+# Add a label to the RT60 Mid frame
+rt60_mid_label = ttk.Label(rt60_mid_frame, text="")
+rt60_mid_label.grid(row=0, column=0, padx=10, pady=5)
+
+# Create a LabelFrame for RT60 High (below Audio Duration and Frequency)
+rt60_high_frame = ttk.LabelFrame(window, text="RT60 High")
+rt60_high_frame.grid(row=6, column=2, padx=10, pady=10, sticky="ew")
+
+# Add a label to the RT60 High frame
+rt60_high_label = ttk.Label(rt60_high_frame, text="")
+rt60_high_label.grid(row=0, column=0, padx=10, pady=5)
 
 # Create a frame for the waveform display
 waveform_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
-waveform_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+waveform_frame.grid(row=8, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+# Add a label above the notification frame for the title
+notification_title = tk.Label(window, text="Notification Bar", font=("Arial", 10, "bold"))
+notification_title.grid(row=3, column=0, sticky="ew")
+
+# Add a label inside the notification frame to display the text
+notification_text = tk.Label(notification_frame, textvariable=notification_var)
+notification_text.grid(row=11, column=0, padx=5, pady=5, sticky="w")
 
 # Start the event loop
 window.mainloop()
