@@ -53,8 +53,8 @@ class audioLoader:
         load_button.grid(row=0, column=2, pady=10)
 
         # Create a "Display default Waveform Graph" button
-        RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform)
-        RT60HIGH_button.grid(row=4, column=0, pady=10)
+        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file))
+        load_waveform_button.grid(row=4, column=0, pady=10)
 
         # Create a "Load RT60 Low" button
         RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"))
@@ -165,6 +165,8 @@ class audioLoader:
 
             # Calculate and display the RT60 High
             self.RT60HIGH_Calculation(destination_file)
+
+            self.destination_file = destination_file
 
         except Exception as e:
             self.notification_var.set(f"Error in removing metadata: {e}")
