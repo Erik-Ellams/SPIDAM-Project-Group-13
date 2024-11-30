@@ -31,34 +31,50 @@ class audioLoader:
         self._create_waveform_frame()
 
     def _create_file_name_frame(self):
-        frame = ttk.LabelFrame(self.window, text="File Name")
-        frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        window = self.window
+        # Create a LabelFrame for the file name
+        file_name_frame = ttk.LabelFrame(window, text="File Name")
+        file_name_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
-        label = tk.Label(frame, textvariable=self.file_name_var, wraplength=400, anchor="w", justify="left")
-        label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        # Add a label inside the frame to display the file name
+        file_name_label = tk.Label(file_name_frame, textvariable=self.file_name_var, wraplength=400, anchor="w", justify="left")
+        file_name_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
     def _create_buttons(self):
+        window = self.window
         button_frame = tk.Frame(self.window)
         button_frame.grid(row=4, column=0, columnspan=4, pady=10)
 
-        load_button = tk.Button(button_frame, text="Load Audio", command=self.load_audio)
-        load_button.grid(row=0, column=0, padx=10)
+        load_button = tk.Button(window, text="Load Audio", command=self.load_audio, width=50, height=5)
+        load_button.grid(row=0, column=2, pady=10)
 
-        rt60_low_button = tk.Button(button_frame, text="Load RT60 Low", command=self.load_audio)
-        rt60_low_button.grid(row=0, column=1, padx=10)
+        # Create a "Display default Waveform Graph" button
+        RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=self.load_audio)
+        RT60HIGH_button.grid(row=4, column=0, pady=10)
 
-        rt60_mid_button = tk.Button(button_frame, text="Load RT60 Mid", command=self.load_audio)
-        rt60_mid_button.grid(row=0, column=2, padx=10)
+        # Create a "Load RT60 Low" button
+        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=self.load_audio)
+        RT60LOW_button.grid(row=4, column=1, pady=10)
 
-        rt60_high_button = tk.Button(button_frame, text="Load RT60 High", command=self.load_audio)
-        rt60_high_button.grid(row=0, column=3, padx=10)
+        # Create a "Load RT60 Mid" button
+        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=self.load_audio)
+        RT60MID_button.grid(row=4, column=2, pady=10)
+
+        # Create a "Load RT60 HIGH" button
+        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=self.load_audio)
+        RT60HIGH_button.grid(row=4, column=3, pady=10)
 
     def _create_result_frames(self):
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
         self.frequency_label = self._create_result_frame("Frequency", 5, 1)
         self.rt60_low_label = self._create_result_frame("RT60 Low", 6, 0)
+        self.rt60_low_label.config(width=10)
+
         self.rt60_mid_label = self._create_result_frame("RT60 Mid", 6, 1)
+        self.rt60_mid_label.config(width=20)
+
         self.rt60_high_label = self._create_result_frame("RT60 High", 6, 2)
+        self.rt60_high_label.config(width=20)
 
     def _create_result_frame(self, title, row, column):
         frame = ttk.LabelFrame(self.window, text=title)
