@@ -1,40 +1,7 @@
-#from test import *
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from pydub import *
-
-
-'''def calculate_rt60(self):
-    try:
-        energy = np.cumsum(self.audio_data[::-1] ** 2)[::-1]
-        t60 = -60 / np.polyfit(np.log10(energy), np.arange(len(energy)), 1)[0]
-        self.rt60['full_band'] = t60
-    except Exception as e:
-        raise ValueError(f"Error calculating RT60: {e}")
-
-
-wav_file_name = "16bit4chan.wav"
-sample_rate, data = wavfile.read(wav_file_name)
-
-calculate_rt60(wav_file_name)'''
-
-'''audio = AudioSegment.from_file("16bit4chan.wav") #m1
-
-#Method 1
-# Access raw audio data
-raw_data = audio.raw_data
-print("(m1)Raw data:", raw_data)
-
-#Method 1
-# Access other properties like channels, frame rate, etc.
-channels = audio.channels
-print("\n(m1)Channels:", channels)
-
-#Method 1
-frame_rate = audio.frame_rate
-print("\n(m1)Frame Rate:", frame_rate)
-'''
 
 def get_samplerate(wav_fname):
     # Importing data
@@ -70,33 +37,6 @@ def get_aud_len(wav_fname):
 
     return length
 
-'''# Load the audio file
-wav_fname = '16bit4chan.wav'
-
-#Importing data
-samplerate, data = wavfile.read(wav_fname)
-
-# Get channels
-channel = data.shape[len(data.shape) - 1] #the .shape returns a tuple of rows and columns
-#len will return how many elements are in it, and then
-#the outside shape means to access the final thing, being the channels in data
-#print(data.shape[len(data.shape) - 1], data.shape[1])
-print("\nChannels:", channel)
-
-#Method 2
-print("\nSample Rate:", samplerate, "Hz") #so this is from the initial call
-
-#Method 2
-# Get full audio length
-length = data.shape[0] / samplerate
-#this is the first item in the array divided by Hz
-print("\nAudio Length:", length, "seconds")'''
-
-start_time = 1000
-end_time = 1010
-#average_freq =
-#rt60 is 3 * rt20
-#reverb will be the absolute value of rt60 rounded to 2
 
 get_channel('16bit4chan.wav')
 get_samplerate('16bit4chan.wav')
