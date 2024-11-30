@@ -12,10 +12,10 @@ import scipy.fftpack
 
 
 class audioLoader:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("SPIDAM V13 Audio Loader")
-        self.root.geometry("1200x1000")
+    def __init__(self, window):
+        self.window = window
+        self.window.title("SPIDAM V13 Audio Loader")
+        self.window.geometry("1200x1000")
 
         # Variables
         self.notification_var = tk.StringVar()
@@ -31,14 +31,14 @@ class audioLoader:
         self._create_waveform_frame()
 
     def _create_file_name_frame(self):
-        frame = ttk.LabelFrame(self.root, text="File Name")
+        frame = ttk.LabelFrame(self.window, text="File Name")
         frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
         label = tk.Label(frame, textvariable=self.file_name_var, wraplength=400, anchor="w", justify="left")
         label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
     def _create_buttons(self):
-        button_frame = tk.Frame(self.root)
+        button_frame = tk.Frame(self.window)
         button_frame.grid(row=4, column=0, columnspan=4, pady=10)
 
         load_button = tk.Button(button_frame, text="Load Audio", command=self.load_audio)
@@ -61,7 +61,7 @@ class audioLoader:
         self.rt60_high_label = self._create_result_frame("RT60 High", 6, 2)
 
     def _create_result_frame(self, title, row, column):
-        frame = ttk.LabelFrame(self.root, text=title)
+        frame = ttk.LabelFrame(self.window, text=title)
         frame.grid(row=row, column=column, padx=10, pady=10, sticky="ew")
 
         label = ttk.Label(frame, text="")
@@ -70,18 +70,18 @@ class audioLoader:
         return label
 
     def _create_notification_bar(self):
-        notification_frame = tk.Frame(self.root, relief=tk.SUNKEN, bd=1)
+        notification_frame = tk.Frame(self.window, relief=tk.SUNKEN, bd=1)
         notification_frame.grid(row=10, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
 
         label = tk.Label(notification_frame, textvariable=self.notification_var)
         label.pack(side=tk.LEFT, padx=5, pady=5)
 
     def _create_waveform_frame(self):
-        self.waveform_frame = tk.Frame(self.root, relief=tk.SUNKEN, bd=1)
+        self.waveform_frame = tk.Frame(self.window, relief=tk.SUNKEN, bd=1)
         self.waveform_frame.grid(row=8, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        self.root.grid_rowconfigure(8, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        self.window.grid_rowconfigure(8, weight=1)
+        self.window.grid_columnconfigure(0, weight=1)
 
     def load_audio(self):
         """
