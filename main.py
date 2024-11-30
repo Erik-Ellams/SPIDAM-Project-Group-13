@@ -223,5 +223,23 @@ notification_title.grid(row=3, column=0, sticky="ew")
 notification_text = tk.Label(notification_frame, textvariable=notification_var)
 notification_text.grid(row=11, column=0, padx=5, pady=5, sticky="w")
 
+# Configure the main window grid
+window.grid_rowconfigure(8, weight=1)  # Allow waveform_frame to expand vertically
+window.grid_columnconfigure(0, weight=1)  # Allow elements in column 0 to expand horizontally
+window.grid_columnconfigure(1, weight=1)  # Allow elements in column 1 to expand horizontally
+window.grid_columnconfigure(2, weight=1)  # Allow elements in column 2 to expand horizontally
+window.grid_columnconfigure(3, weight=1)  # Allow elements in column 3 to expand horizontally
+
+# Explicitly set widths for LabelFrames to prevent them from expanding excessively
+file_name_frame.config(width=400)
+duration_frame.config(width=200)
+frequency_frame.config(width=200)
+rt60_low_frame.config(width=200)
+rt60_mid_frame.config(width=200)
+rt60_high_frame.config(width=200)
+
+# Update the waveform_frame to expand within its grid cell
+waveform_frame.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+
 # Start the event loop
 window.mainloop()
