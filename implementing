@@ -1,0 +1,31 @@
+#from test import *
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.io import wavfile
+from pydub import *
+
+
+wav_fname = '16bit4chan.wav'
+samplerate, data = wavfile.read(wav_fname)
+
+# Load the audio file
+audio = AudioSegment.from_file("16bit4chan.wav")
+
+#Method 1
+# Access raw audio data
+raw_data = audio.raw_data
+print("Raw data:", raw_data)
+
+#Method 1
+# Access other properties like channels, frame rate, etc.
+channels = audio.channels
+print("\nChannels:", channels)
+
+frame_rate = audio.frame_rate
+print("\nFrame Rate:", frame_rate)
+
+start_time = 1000
+end_time = 1010
+#average_freq =
+#rt60 is 3 * rt20
+#reverb will be the absolute value of rt60 rounded to 2
