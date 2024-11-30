@@ -188,7 +188,7 @@ frequency_label = ttk.Label(frequency_frame, text="")
 frequency_label.grid(row=0, column=0, padx=10, pady=5)
 
 # Create a LabelFrame for RT60 Low (below Audio Duration and Frequency)
-rt60_low_frame = ttk.LabelFrame(window, text="RT60 Low")
+rt60_low_frame = ttk.LabelFrame(window, text="RT60 LOW")
 rt60_low_frame.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
 # Add a label to the RT60 Low frame
@@ -215,16 +215,22 @@ rt60_high_label.grid(row=0, column=0, padx=10, pady=5)
 waveform_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
 waveform_frame.grid(row=8, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-# Add a label above the notification frame for the title
+# Add a label above the notification frame for the title (optional)
 notification_title = tk.Label(window, text="Notification Bar", font=("Arial", 10, "bold"))
-notification_title.grid(row=3, column=0, sticky="ew")
+notification_title.grid(row=9, column=0, columnspan=4, sticky="ew")
+
+# Add the notification frame at the bottom
+notification_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
+notification_frame.grid(row=10, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
 
 # Add a label inside the notification frame to display the text
 notification_text = tk.Label(notification_frame, textvariable=notification_var)
-notification_text.grid(row=11, column=0, padx=5, pady=5, sticky="w")
+notification_text.pack(side=tk.LEFT, padx=5, pady=5)
 
 # Configure the main window grid
 window.grid_rowconfigure(8, weight=1)  # Allow waveform_frame to expand vertically
+window.grid_rowconfigure(9, weight=0)  # Ensure notification stays fixed at the bottom
+window.grid_rowconfigure(10, weight=0)  # Ensure notification stays fixed at the bottom
 window.grid_columnconfigure(0, weight=1)  # Allow elements in column 0 to expand horizontally
 window.grid_columnconfigure(1, weight=1)  # Allow elements in column 1 to expand horizontally
 window.grid_columnconfigure(2, weight=1)  # Allow elements in column 2 to expand horizontally
