@@ -17,6 +17,9 @@ class audioLoader:
         self.window.title("SPIDAM V13 Audio Loader")
         self.window.geometry("1200x1000")
 
+        # Set the window background color to purple
+        self.window.config(bg="purple")
+
         # Variables
         self.notification_var = tk.StringVar()
         self.file_name_var = tk.StringVar()
