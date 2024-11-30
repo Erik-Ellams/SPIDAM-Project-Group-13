@@ -285,6 +285,9 @@ window.title("SPIDAM V13 Audio Loader")
 # Set the window size
 window.geometry("1200x1000")
 
+# Set the window background color to purple
+window.config(bg="purple")
+
 # Create a StringVar for the notification text
 notification_var = tk.StringVar()
 
