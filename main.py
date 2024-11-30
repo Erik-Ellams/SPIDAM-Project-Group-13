@@ -308,19 +308,23 @@ notification_frame = tk.Frame(window, relief=tk.SUNKEN, bd=1)
 notification_frame.grid(row=2, column=0, sticky="ew")
 
 # Create a "Load Audio" button
-load_button = tk.Button(window, text="Load Audio", command=load_audio)
-load_button.grid(row=4, column=0, pady=10)
+load_button = tk.Button(window, text="Load Audio", command=load_audio, width=50, height=5)
+load_button.grid(row=0, column=2, pady=10)
+
+# Create a "Display default Waveform Graph" button
+RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=load_audio)
+RT60HIGH_button.grid(row=4, column=0, pady=10)
 
 # Create a "Load RT60 Low" button
-RT60LOW_button = tk.Button(window, text="Load RT60 Low", command=load_audio)
+RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=load_audio)
 RT60LOW_button.grid(row=4, column=1, pady=10)
 
 # Create a "Load RT60 Mid" button
-RT60MID_button = tk.Button(window, text="Load RT60 MID", command=load_audio)
+RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=load_audio)
 RT60MID_button.grid(row=4, column=2, pady=10)
 
 # Create a "Load RT60 HIGH" button
-RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH", command=load_audio)
+RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=load_audio)
 RT60HIGH_button.grid(row=4, column=3, pady=10)
 
 # Create a LabelFrame to display duration
