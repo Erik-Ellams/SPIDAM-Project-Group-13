@@ -18,7 +18,7 @@ class audioLoader:
         self.window.geometry("1200x1000")
 
         # Set the window background color to purple
-        self.window.config(bg="purple")
+        self.window.config(bg="#B0C4DE")
 
         # Variables
         self.notification_var = tk.StringVar()
@@ -53,7 +53,7 @@ class audioLoader:
         load_button.grid(row=0, column=2, pady=10)
 
         # Create a "Display default Waveform Graph" button
-        RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=self.load_audio)
+        RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform)
         RT60HIGH_button.grid(row=4, column=0, pady=10)
 
         # Create a "Load RT60 Low" button
@@ -72,7 +72,7 @@ class audioLoader:
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
         self.frequency_label = self._create_result_frame("Frequency", 5, 1)
         self.rt60_low_label = self._create_result_frame("RT60 Low", 6, 0)
-        self.rt60_low_label.config(width=10)
+        self.rt60_low_label.config(width=20)
 
         self.rt60_mid_label = self._create_result_frame("RT60 Mid", 6, 1)
         self.rt60_mid_label.config(width=20)
@@ -227,7 +227,19 @@ class audioLoader:
         Calculates the RT60 Low value of the .wav file and updates the rt60_low_label.
         """
         try:
-            audio_samples = self.audio_samples
+            # Load the audio file
+            with wave.open(file_path, "r") as wav_file:
+                n_frames = wav_file.getnframes()
+                self.framerate = wav_file.getframerate()
+                n_channels = wav_file.getnchannels()
+                audio_data = wav_file.readframes(n_frames)
+
+            # Convert audio data to numpy array
+            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
+
+            # If the audio has multiple channels, use only the first channel
+            if n_channels > 1:
+                audio_samples = audio_samples[::n_channels]
 
             # Simulated RT60 Low calculation (using simple decay analysis for demonstration)
             # Assume low frequencies are the first 20% of the FFT spectrum
@@ -293,23 +305,11 @@ class audioLoader:
         Displays the waveform of the .wav file in the GUI.
         """
         try:
-            # Read the WAV file
-            with wave.open(file_path, "r") as wav_file:
-                n_frames = wav_file.getnframes()
-                n_channels = wav_file.getnchannels()
-                framerate = wav_file.getframerate()
-                audio_data = wav_file.readframes(n_frames)
-
-            # Convert audio data to numpy array
-            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
-
-            # If the audio has multiple channels, take the first one
-            if n_channels > 1:
-                audio_samples = audio_samples[::n_channels]
+            audio_samples = self.audio_samples
 
             # Create the waveform plot with a larger figure size
             fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
-            time_axis = np.linspace(0, len(audio_samples) / framerate, num=len(audio_samples))
+            time_axis = np.linspace(0, len(audio_samples) / self.framerate, num=len(audio_samples))
             ax.plot(time_axis, audio_samples, color="blue")
             ax.set_title("Waveform", fontsize=16)
             ax.set_xlabel("Time (s)", fontsize=12)
