@@ -48,7 +48,12 @@ print("\n(m2) Channels:", m2_chan)
 
 #Method 2
 m2_samplerate = samplerate
-print("\n(m2) Channels:", m2_samplerate)
+print("\n(m2) Sample Rate:", m2_samplerate, "Hz") #so this is the same as frame rate
+
+#Method 2
+# Get full audio length
+length = data.shape[0] / m2_samplerate
+print("\n(m2) Audio Length:", length, "seconds")
 
 start_time = 1000
 end_time = 1010
