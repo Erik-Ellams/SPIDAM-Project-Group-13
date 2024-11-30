@@ -26,6 +26,7 @@ class audioLoader:
 
         # Initialize UI
         self._setup_ui()
+
     def _setup_ui(self):
         self._create_file_name_frame()
         self._create_buttons()
@@ -56,15 +57,15 @@ class audioLoader:
         RT60HIGH_button.grid(row=4, column=0, pady=10)
 
         # Create a "Load RT60 Low" button
-        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=self.load_audio)
+        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=self.display_rt60("low"))
         RT60LOW_button.grid(row=4, column=1, pady=10)
 
         # Create a "Load RT60 Mid" button
-        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=self.load_audio)
+        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=self.display_rt60("medium"))
         RT60MID_button.grid(row=4, column=2, pady=10)
 
         # Create a "Load RT60 HIGH" button
-        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=self.load_audio)
+        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=self.display_rt60("high"))
         RT60HIGH_button.grid(row=4, column=3, pady=10)
 
     def _create_result_frames(self):
@@ -201,6 +202,8 @@ class audioLoader:
             if n_channels > 1:
                 audio_samples = audio_samples[::n_channels]
 
+            self.audio_samples = audio_samples
+
             # Perform FFT and find frequencies
             fft_result = np.abs(scipy.fftpack.fft(audio_samples))
             frequencies = np.fft.fftfreq(len(fft_result), d=1 / framerate)
@@ -224,19 +227,7 @@ class audioLoader:
         Calculates the RT60 Low value of the .wav file and updates the rt60_low_label.
         """
         try:
-            # Load the audio file
-            with wave.open(file_path, "r") as wav_file:
-                n_frames = wav_file.getnframes()
-                framerate = wav_file.getframerate()
-                n_channels = wav_file.getnchannels()
-                audio_data = wav_file.readframes(n_frames)
-
-            # Convert audio data to numpy array
-            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
-
-            # If the audio has multiple channels, use only the first channel
-            if n_channels > 1:
-                audio_samples = audio_samples[::n_channels]
+            audio_samples = self.audio_samples
 
             # Simulated RT60 Low calculation (using simple decay analysis for demonstration)
             # Assume low frequencies are the first 20% of the FFT spectrum
@@ -258,19 +249,7 @@ class audioLoader:
         Calculates the RT60 Mid value of the .wav file and updates the rt60_mid_label.
         """
         try:
-            # Load the audio file
-            with wave.open(file_path, "r") as wav_file:
-                n_frames = wav_file.getnframes()
-                framerate = wav_file.getframerate()
-                n_channels = wav_file.getnchannels()
-                audio_data = wav_file.readframes(n_frames)
-
-            # Convert audio data to numpy array
-            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
-
-            # If the audio has multiple channels, use only the first channel
-            if n_channels > 1:
-                audio_samples = audio_samples[::n_channels]
+            audio_samples = self.audio_samples
 
             # Simulated RT60 Mid calculation (using simple decay analysis for demonstration)
             # Assume mid frequencies are between 20% and 60% of the FFT spectrum
@@ -292,19 +271,7 @@ class audioLoader:
         Calculates the RT60 High value of the .wav file and updates the rt60_high_label.
         """
         try:
-            # Load the audio file
-            with wave.open(file_path, "r") as wav_file:
-                n_frames = wav_file.getnframes()
-                framerate = wav_file.getframerate()
-                n_channels = wav_file.getnchannels()
-                audio_data = wav_file.readframes(n_frames)
-
-            # Convert audio data to numpy array
-            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
-
-            # If the audio has multiple channels, use only the first channel
-            if n_channels > 1:
-                audio_samples = audio_samples[::n_channels]
+            audio_samples = self.audio_samples
 
             # Simulated RT60 High calculation (using simple decay analysis for demonstration)
             # Assume high frequencies are the last 20% of the FFT spectrum
@@ -352,6 +319,52 @@ class audioLoader:
             # Clear existing widgets in the frame
             for widget in self.waveform_frame.winfo_children():
                 widget.destroy()
+
+            # Embed the plot in the tkinter window
+            canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+            self.notification_var.set("Waveform displayed.")
+        except Exception as e:
+            self.notification_var.set(f"Error displaying waveform: {e}")
+
+    def display_rt60(self, type_freq):
+        try:
+            # Clear existing widgets in the frame
+            for widget in self.waveform_frame.winfo_children():
+                widget.destroy()
+
+            # Convert audio data to numpy array
+            audio_samples = self.audio_samples
+
+            # Create the waveform plot with a larger figure size
+            fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
+
+            fft_result = np.abs(scipy.fftpack.fft(audio_samples))
+
+            #Tests if the type of frequency required is low
+            if type_freq == "low":
+                low_freq_fft = fft_result[:len(fft_result) // 5]  # First 20% frequencies
+                time = np.linspace(0, len(low_freq_fft), len(low_freq_fft))
+                ax.plot(time, low_freq_fft, color="blue")
+                ax.set_title("RT60 Low Frequency", fontsize=16)
+
+            elif type_freq == "medium":
+                mid_freq_fft = fft_result[len(fft_result) // 5 : len(fft_result) * 3 // 5]  # 20% to 60% frequencies
+                time = np.linspace(0, len(mid_freq_fft), len(mid_freq_fft))
+                ax.plot(time, mid_freq_fft, color="blue")
+                ax.set_title("RT60 Medium Frequency", fontsize=16)
+
+            elif type_freq == "high":
+                high_freq_fft = fft_result[-len(fft_result) // 5:]  # Last 20% frequencies
+                time = np.linspace(0, len(high_freq_fft), len(high_freq_fft))
+                ax.plot(time, high_freq_fft, color="blue")
+                ax.set_title("RT60 High Frequency", fontsize=16)
+
+            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_ylabel("Amplitude (dB)", fontsize=12)
+            ax.grid(True)  # Optional: Add a grid for better readability
 
             # Embed the plot in the tkinter window
             canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
