@@ -20,9 +20,7 @@ sample_rate, data = wavfile.read(wav_file_name)
 calculate_rt60(wav_file_name)'''
 
 
-# Load the audio file
-audio = AudioSegment.from_file("16bit4chan.wav") #m1
-wav_fname = '16bit4chan.wav' #m2
+'''audio = AudioSegment.from_file("16bit4chan.wav") #m1
 
 #Method 1
 # Access raw audio data
@@ -37,23 +35,29 @@ print("\n(m1)Channels:", channels)
 #Method 1
 frame_rate = audio.frame_rate
 print("\n(m1)Frame Rate:", frame_rate)
+'''
 
-#Method 2
+
+# Load the audio file
+wav_fname = '16bit4chan.wav' #m2
+
+#Importing data
 samplerate, data = wavfile.read(wav_fname)
 
-#Method 2
 # Get channels
-m2_chan = data.shape[len(data.shape) - 1]
-print("\n(m2) Channels:", m2_chan)
+channel = data.shape[len(data.shape) - 1] #the .shape returns a tuple of rows and columns
+#len will return how many elements are in it, and then
+#the outside shape means to access the final thing, being the channels in data
+#print(data.shape[len(data.shape) - 1], data.shape[1])
+print("\nChannels:", channel)
 
 #Method 2
-m2_samplerate = samplerate
-print("\n(m2) Sample Rate:", m2_samplerate, "Hz") #so this is the same as frame rate
+print("\nSample Rate:", samplerate, "Hz") #so this is from the initial call
 
 #Method 2
 # Get full audio length
-length = data.shape[0] / m2_samplerate
-print("\n(m2) Audio Length:", length, "seconds")
+length = data.shape[0] / samplerate
+print("\nAudio Length:", length, "seconds")
 
 start_time = 1000
 end_time = 1010
