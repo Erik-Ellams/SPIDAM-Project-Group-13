@@ -19,7 +19,6 @@ sample_rate, data = wavfile.read(wav_file_name)
 
 calculate_rt60(wav_file_name)'''
 
-
 '''audio = AudioSegment.from_file("16bit4chan.wav") #m1
 
 #Method 1
@@ -37,9 +36,42 @@ frame_rate = audio.frame_rate
 print("\n(m1)Frame Rate:", frame_rate)
 '''
 
+def get_samplerate(wav_fname):
+    # Importing data
+    samplerate, data = wavfile.read(wav_fname)
 
-# Load the audio file
-wav_fname = '16bit4chan.wav' #m2
+    return samplerate
+
+def print_samplerate(wav_fname):
+    print("\nSample Rate:", get_samplerate(wav_fname), "Hz")
+    return  get_samplerate(wav_fname)
+
+def get_data(wav_fname):
+    # Importing data
+    samplerate, data = wavfile.read(wav_fname)
+
+    return data
+
+
+def get_channel(wav_fname):
+    data = get_data(wav_fname)
+    channel = data.shape[len(data.shape) - 1]
+    print("\nChannels:", channel)
+
+    return channel
+
+def get_aud_len(wav_fname):
+    data = get_data(wav_fname)
+    samplerate = print_samplerate(wav_fname)
+
+    length = data.shape[0] / samplerate
+
+    print("\nAudio Length:", length, "seconds")
+
+    return length
+
+'''# Load the audio file
+wav_fname = '16bit4chan.wav'
 
 #Importing data
 samplerate, data = wavfile.read(wav_fname)
@@ -57,10 +89,15 @@ print("\nSample Rate:", samplerate, "Hz") #so this is from the initial call
 #Method 2
 # Get full audio length
 length = data.shape[0] / samplerate
-print("\nAudio Length:", length, "seconds")
+#this is the first item in the array divided by Hz
+print("\nAudio Length:", length, "seconds")'''
 
 start_time = 1000
 end_time = 1010
 #average_freq =
 #rt60 is 3 * rt20
 #reverb will be the absolute value of rt60 rounded to 2
+
+get_channel('16bit4chan.wav')
+get_samplerate('16bit4chan.wav')
+get_aud_len('16bit4chan.wav')
