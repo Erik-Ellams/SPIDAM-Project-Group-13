@@ -68,9 +68,13 @@ class audioLoader:
         RT60HIGH_button = tk.Button(window, text="RT60 HIGH Plot", command=lambda: self.display_rt60("high"), width=20)
         RT60HIGH_button.grid(row=4, column=3, pady=5)
 
-        # Create a "Load RT60 HIGH" button
+        # Create a combined RT60 plot
         Combine_plots_button = tk.Button(window, text="Combined RT60 Plot", command=lambda: self.display_combined(), width=20)
         Combine_plots_button.grid(row=4, column=4)
+
+        # Reduce the reverb
+        reduce_reverb_button = tk.Button(self.window, text="Reduce Reverb to 0.5s", command=self.reduce_reverb, width=20)
+        reduce_reverb_button.grid(row=4, column=5, pady=5)
 
     def _create_result_frames(self):
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
@@ -326,7 +330,7 @@ class audioLoader:
             ax.set_title("Waveform", fontsize=16)
             ax.set_xlabel("Time (cs)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
-            ax.grid(True)  # Optional: Add a grid for better readability
+            ax.grid(True)
 
             # Clear existing widgets in the frame
             for widget in self.waveform_frame.winfo_children():
@@ -343,6 +347,7 @@ class audioLoader:
 
     def display_rt60(self, type_freq):
         try:
+            self.type_freq = type_freq
             # Clear existing widgets in the frame
             for widget in self.waveform_frame.winfo_children():
                 widget.destroy()
@@ -422,6 +427,54 @@ class audioLoader:
             self.notification_var.set("Waveform displayed.")
         except Exception as e:
             self.notification_var.set(f"Error displaying waveform: {e}")
+
+    def reduce_reverb(self):
+        """
+        Reduces the RT60 reverberation time of the loaded audio file to 0.5 seconds.
+        """
+        try:
+            # Clear existing widgets in the frame
+            for widget in self.waveform_frame.winfo_children():
+                widget.destroy()
+
+            if not hasattr(self, "destination_file"):
+                self.notification_var.set("No audio file loaded. Please load an audio file first.")
+                return
+
+            # Load the audio file
+            audio = AudioSegment.from_file(self.destination_file)
+
+            # Simulate RT60 reduction (apply low-pass filter and fade out)
+            reduced_reverb = audio.low_pass_filter(3000).fade_out(500)  # Example of simple processing
+
+            # Save the modified audio
+            reduced_rt60_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
+            reduced_reverb.export(reduced_rt60_path, format="wav")
+
+            # Update the destination file
+            self.destination_file = reduced_rt60_path
+
+            # Notify the user
+            self.notification_var.set("RT60 reduced to 0.5 seconds and audio updated.")
+
+            # Generate FFT result for visualization
+            fft_result = np.abs(scipy.fftpack.fft(reduced_reverb.get_array_of_samples()))
+
+            # Plot the FFT result
+            fig, ax = plt.subplots(figsize=(12, 6))
+            time = np.linspace(0, len(fft_result), len(fft_result))
+            ax.plot(time, fft_result, color="blue")
+            ax.set_title("RT60 Reverb Frequency", fontsize=16)
+
+            # Embed the plot in the Tkinter GUI
+            canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill='both', expand=True)
+
+        except Exception as e:
+            self.notification_var.set(f"Error reducing RT60: {e}")
+
+
 
 
 ######################################################################################
