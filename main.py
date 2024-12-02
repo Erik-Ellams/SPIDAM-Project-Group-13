@@ -49,9 +49,6 @@ class audioLoader:
         button_frame = tk.Frame(self.window)
         button_frame.grid(row=4, column=0, columnspan=5, pady=10)
 
-        for i in range(5):
-            window.grid_columnconfigure(i, weight=1)
-
         load_button = tk.Button(window, text="Load Audio", command=self.load_audio, width=50, height=5)
         load_button.grid(row=0, column=2, pady=10)
 
