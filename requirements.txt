@@ -1,0 +1,16 @@
+The project requires the following libraries:
+•	tkinter as tk: Used for creating the graphical user interface (GUI).
+•	filedialog (from tkinter): Provides file selection dialogs for opening or saving files.
+•	ttk (from tkinter): Offers themed widgets for a more modern interface.
+•	pydub.AudioSegment: Enables audio manipulation, including file conversion and editing.
+•	tempfile: Handles temporary file creation and management.
+•	os: Provides functions for interacting with the operating system, such as file paths and environment variables.
+•	subprocess: Used to execute external programs and commands from within the Python script.
+•	matplotlib.pyplot as plt: Used for creating visualizations, such as waveforms and frequency spectra.
+•	matplotlib.backends.backend_tkagg.FigureCanvasTkAgg: Integrates matplotlib plots into tkinter GUIs.
+•	numpy: Used for numerical computations, particularly with arrays and mathematical operations.
+•	wave: Enables reading and writing WAV audio files.
+•	scipy.fftpack: Provides functions for performing Fourier Transform for frequency domain analysis. External libraries:
+
+External libraries:
+•	ffmpeg: For manipulating video and audio files.
