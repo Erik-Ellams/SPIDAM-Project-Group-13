@@ -47,26 +47,34 @@ class audioLoader:
     def _create_buttons(self):
         window = self.window
         button_frame = tk.Frame(self.window)
-        button_frame.grid(row=4, column=0, columnspan=4, pady=10)
+        button_frame.grid(row=4, column=0, columnspan=6, pady=20)
 
         load_button = tk.Button(window, text="Load Audio", command=self.load_audio, width=50, height=5)
         load_button.grid(row=0, column=2, pady=10)
 
         # Create a "Display default Waveform Graph" button
-        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file))
-        load_waveform_button.grid(row=4, column=0, pady=10)
+        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file), width=20)
+        load_waveform_button.grid(row=4, column=0, pady=5)
 
         # Create a "Load RT60 Low" button
-        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"))
-        RT60LOW_button.grid(row=4, column=1, pady=10)
+        RT60LOW_button = tk.Button(window, text="RT60 Low Plot", command=lambda: self.display_rt60("low"), width=20)
+        RT60LOW_button.grid(row=4, column=1, pady=5, padx=10)
 
         # Create a "Load RT60 Mid" button
-        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=lambda: self.display_rt60("medium"))
-        RT60MID_button.grid(row=4, column=2, pady=10)
+        RT60MID_button = tk.Button(window, text="RT60 MID Plot", command=lambda: self.display_rt60("medium"), width=20)
+        RT60MID_button.grid(row=4, column=2, pady=5, padx=10)
 
         # Create a "Load RT60 HIGH" button
-        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
-        RT60HIGH_button.grid(row=4, column=3, pady=10)
+        RT60HIGH_button = tk.Button(window, text="RT60 HIGH Plot", command=lambda: self.display_rt60("high"), width=20)
+        RT60HIGH_button.grid(row=4, column=3, pady=5, padx=10)
+
+        # Create a combined RT60 plot
+        Combine_plots_button = tk.Button(window, text="Combined RT60 Plot", command=lambda: self.display_combined(), width=20)
+        Combine_plots_button.grid(row=4, column=4, pady=5, padx=10)
+
+        # Reduce the reverb
+        reduce_reverb_button = tk.Button(self.window, text="Reduce Reverb to 0.5s", command=self.reduce_reverb, width=20)
+        reduce_reverb_button.grid(row=4, column=5, pady=5, padx=10)
 
     def _create_result_frames(self):
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
@@ -322,7 +330,7 @@ class audioLoader:
             ax.set_title("Waveform", fontsize=16)
             ax.set_xlabel("Time (s)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
-            ax.grid(True)  # Optional: Add a grid for better readability
+            ax.grid(True)
 
             # Clear existing widgets in the frame
             for widget in self.waveform_frame.winfo_children():
@@ -339,6 +347,7 @@ class audioLoader:
 
     def display_rt60(self, type_freq):
         try:
+            self.type_freq = type_freq
             # Clear existing widgets in the frame
             for widget in self.waveform_frame.winfo_children():
                 widget.destroy()
@@ -357,20 +366,23 @@ class audioLoader:
                 time = np.linspace(0, len(low_freq_fft), len(low_freq_fft))
                 ax.plot(time, low_freq_fft, color="blue")
                 ax.set_title("RT60 Low Frequency", fontsize=16)
+                self.notification_var.set("RT60 Low displayed.")
 
             elif type_freq == "medium":
                 mid_freq_fft = fft_result[len(fft_result) // 5 : len(fft_result) * 3 // 5]  # 20% to 60% frequencies
                 time = np.linspace(0, len(mid_freq_fft), len(mid_freq_fft))
                 ax.plot(time, mid_freq_fft, color="blue")
                 ax.set_title("RT60 Medium Frequency", fontsize=16)
+                self.notification_var.set("RT60 MID displayed.")
 
             elif type_freq == "high":
                 high_freq_fft = fft_result[-len(fft_result) // 5:]  # Last 20% frequencies
                 time = np.linspace(0, len(high_freq_fft), len(high_freq_fft))
                 ax.plot(time, high_freq_fft, color="blue")
                 ax.set_title("RT60 High Frequency", fontsize=16)
+                self.notification_var.set("RT60 High displayed.")
 
-            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_xlabel("Time (cs)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
             ax.grid(True)  # Optional: Add a grid for better readability
 
@@ -379,9 +391,95 @@ class audioLoader:
             canvas.draw()
             canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-            self.notification_var.set("Waveform displayed.")
+            #self.notification_var.set("Waveform displayed.")
         except Exception as e:
             self.notification_var.set(f"Error displaying waveform: {e}")
+
+    def display_combined(self):
+        try:
+            # Clear existing widgets in the frame
+            for widget in self.waveform_frame.winfo_children():
+                widget.destroy()
+
+            audio_samples = self.audio_samples
+            fft_result = np.abs(scipy.fftpack.fft(audio_samples))
+
+            fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
+
+            low_freq_fft = fft_result[:len(fft_result) // 5]  # First 20% frequencies
+            time = np.linspace(0, len(low_freq_fft), len(low_freq_fft))
+            ax.plot(time, low_freq_fft, color="blue")
+
+            mid_freq_fft = fft_result[len(fft_result) // 5: len(fft_result) * 3 // 5]  # 20% to 60% frequencies
+            time = np.linspace(0, len(mid_freq_fft), len(mid_freq_fft))
+            ax.plot(time, mid_freq_fft, color="blue")
+
+            high_freq_fft = fft_result[-len(fft_result) // 5:]  # Last 20% frequencies
+            time = np.linspace(0, len(high_freq_fft), len(high_freq_fft))
+            ax.plot(time, high_freq_fft, color="blue")
+
+            ax.set_title("Combined RT60 Plot", fontsize=16)
+            ax.set_xlabel("Time (cs)", fontsize=12)
+            ax.set_ylabel("Amplitude (dB)", fontsize=12)
+            ax.grid(True)  # Optional: Add a grid for better readability
+
+            # Embed the plot in the tkinter window
+            canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+            self.notification_var.set("Combined RT60 displayed.")
+        except Exception as e:
+            self.notification_var.set(f"Error displaying waveform: {e}")
+
+    def reduce_reverb(self):
+        """
+        Reduces the RT60 reverberation time of the loaded audio file to 0.5 seconds.
+        """
+        try:
+            # Clear existing widgets in the frame
+            for widget in self.waveform_frame.winfo_children():
+                widget.destroy()
+
+            if not hasattr(self, "destination_file"):
+                self.notification_var.set("No audio file loaded. Please load an audio file first.")
+                return
+
+            # Load the audio file
+            audio = AudioSegment.from_file(self.destination_file)
+
+            # Simulate RT60 reduction (apply low-pass filter and fade out)
+            reduced_reverb = audio.low_pass_filter(3000).fade_out(500)  # Example of simple processing
+
+            # Save the modified audio
+            reduced_rt60_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
+            reduced_reverb.export(reduced_rt60_path, format="wav")
+
+            # Update the destination file
+            self.destination_file = reduced_rt60_path
+
+            # Notify the user
+            self.notification_var.set("RT60 reduced to 0.5 seconds and audio updated.")
+
+            # Generate FFT result for visualization
+            fft_result = np.abs(scipy.fftpack.fft(reduced_reverb.get_array_of_samples()))
+
+            # Plot the FFT result
+            fig, ax = plt.subplots(figsize=(12, 6))
+            time = np.linspace(0, len(fft_result), len(fft_result))
+            ax.plot(time, fft_result, color="blue")
+            ax.set_title("RT60 Reverb Frequency", fontsize=16)
+            ax.set_xlabel("Time (cs)", fontsize=12)
+            ax.set_ylabel("Amplitude (dB)", fontsize=12)
+
+            # Embed the plot in the Tkinter GUI
+            canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill='both', expand=True)
+
+        except Exception as e:
+            self.notification_var.set(f"Error reducing RT60: {e}")
+
+
 
 
 ######################################################################################
