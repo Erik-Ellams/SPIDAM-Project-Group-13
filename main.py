@@ -47,30 +47,33 @@ class audioLoader:
     def _create_buttons(self):
         window = self.window
         button_frame = tk.Frame(self.window)
-        button_frame.grid(row=4, column=0, columnspan=4, pady=10)
+        button_frame.grid(row=4, column=0, columnspan=5, pady=10)
+
+        for i in range(5):
+            window.grid_columnconfigure(i, weight=1)
 
         load_button = tk.Button(window, text="Load Audio", command=self.load_audio, width=50, height=5)
         load_button.grid(row=0, column=2, pady=10)
 
         # Create a "Display default Waveform Graph" button
-        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file))
-        load_waveform_button.grid(row=4, column=0, pady=10)
+        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file), width=20)
+        load_waveform_button.grid(row=4, column=0, pady=5)
 
         # Create a "Load RT60 Low" button
-        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"))
-        RT60LOW_button.grid(row=4, column=1, pady=10)
+        RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"), width=20)
+        RT60LOW_button.grid(row=4, column=1, pady=5)
 
         # Create a "Load RT60 Mid" button
-        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=lambda: self.display_rt60("medium"))
-        RT60MID_button.grid(row=4, column=2, pady=10)
+        RT60MID_button = tk.Button(window, text="Load RT60 MID Plot", command=lambda: self.display_rt60("medium"), width=20)
+        RT60MID_button.grid(row=4, column=2, pady=5)
 
         # Create a "Load RT60 HIGH" button
-        RT60HIGH_button = tk.Button(window, text="RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
-        RT60HIGH_button.grid(row=4, column=3, pady=10)
+        RT60HIGH_button = tk.Button(window, text="RT60 HIGH Plot", command=lambda: self.display_rt60("high"), width=20)
+        RT60HIGH_button.grid(row=4, column=3, pady=5)
 
         # Create a "Load RT60 HIGH" button
-        Combine_plots_button = tk.Button(window, text="Load Combined RT60 Plot", command=lambda: self.display_combined())
-        Combine_plots_button.grid(row=4, column=4, pady=10)
+        Combine_plots_button = tk.Button(window, text="Combined RT60 Plot", command=lambda: self.display_combined(), width=20)
+        Combine_plots_button.grid(row=4, column=4)
 
     def _create_result_frames(self):
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
