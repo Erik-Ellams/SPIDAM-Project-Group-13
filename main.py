@@ -68,6 +68,10 @@ class audioLoader:
         RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
         RT60HIGH_button.grid(row=4, column=3, pady=10)
 
+        # Create a "Load RT60 HIGH" button
+        Combine_plots_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_combined())
+        Combine_plots_button.grid(row=4, column=4, pady=10)
+
     def _create_result_frames(self):
         self.duration_label = self._create_result_frame("Audio Duration", 5, 0)
         self.frequency_label = self._create_result_frame("Frequency", 5, 1)
@@ -379,6 +383,42 @@ class audioLoader:
             canvas.draw()
             canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+            self.notification_var.set("Waveform displayed.")
+        except Exception as e:
+            self.notification_var.set(f"Error displaying waveform: {e}")
+
+    def display_combined(self):
+        try:
+            # Clear existing widgets in the frame
+            for widget in self.waveform_frame.winfo_children():
+                widget.destroy()
+
+            audio_samples = self.audio_samples
+            fft_result = np.abs(scipy.fftpack.fft(audio_samples))
+
+            fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
+
+            low_freq_fft = fft_result[:len(fft_result) // 5]  # First 20% frequencies
+            time = np.linspace(0, len(low_freq_fft), len(low_freq_fft))
+            ax.plot(time, low_freq_fft, color="blue")
+
+            mid_freq_fft = fft_result[len(fft_result) // 5: len(fft_result) * 3 // 5]  # 20% to 60% frequencies
+            time = np.linspace(0, len(mid_freq_fft), len(mid_freq_fft))
+            ax.plot(time, mid_freq_fft, color="blue")
+
+            high_freq_fft = fft_result[-len(fft_result) // 5:]  # Last 20% frequencies
+            time = np.linspace(0, len(high_freq_fft), len(high_freq_fft))
+            ax.plot(time, high_freq_fft, color="blue")
+
+            ax.set_title("Combined RT60 Plot", fontsize=16)
+            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_ylabel("Amplitude (dB)", fontsize=12)
+            ax.grid(True)  # Optional: Add a grid for better readability
+
+            # Embed the plot in the tkinter window
+            canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
             self.notification_var.set("Waveform displayed.")
         except Exception as e:
             self.notification_var.set(f"Error displaying waveform: {e}")
