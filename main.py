@@ -53,8 +53,8 @@ class audioLoader:
         load_button.grid(row=0, column=2, pady=10)
 
         # Create a "Display default Waveform Graph" button
-        RT60HIGH_button = tk.Button(window, text="Load Waveform Plot", command=self.load_audio)
-        RT60HIGH_button.grid(row=4, column=0, pady=10)
+        load_waveform_button = tk.Button(window, text="Load Waveform Plot", command=lambda: self.display_waveform(self.destination_file))
+        load_waveform_button.grid(row=4, column=0, pady=10)
 
         # Create a "Load RT60 Low" button
         RT60LOW_button = tk.Button(window, text="Load RT60 Low Plot", command=lambda: self.display_rt60("low"))
@@ -90,6 +90,9 @@ class audioLoader:
         return label
 
     def _create_notification_bar(self):
+        notification_title = tk.Label(self.window, text="Notification Bar", font=("Arial", 10, "bold"))
+        notification_title.grid(row=9, column=0, columnspan=4, sticky="ew")
+
         notification_frame = tk.Frame(self.window, relief=tk.SUNKEN, bd=1)
         notification_frame.grid(row=10, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
 
@@ -118,6 +121,7 @@ class audioLoader:
             # Start the processing chain
             output_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
             self.convert_to_wav(file_path, output_path)
+            self.display_waveform(self.destination_file)
         else:
             self.notification_var.set("No file selected!")
 
@@ -148,6 +152,8 @@ class audioLoader:
             subprocess.run(["ffmpeg", "-y", "-i", source_file, "-map_metadata", "-1", destination_file], check=True)
             self.notification_var.set("Metadata removed.")
 
+            self.destination_file = destination_file
+
             # Proceed to get duration
             self.get_duration(destination_file)
 
@@ -165,6 +171,8 @@ class audioLoader:
 
             # Calculate and display the RT60 High
             self.RT60HIGH_Calculation(destination_file)
+
+            self.destination_file = destination_file
 
         except Exception as e:
             self.notification_var.set(f"Error in removing metadata: {e}")
@@ -227,7 +235,19 @@ class audioLoader:
         Calculates the RT60 Low value of the .wav file and updates the rt60_low_label.
         """
         try:
-            audio_samples = self.audio_samples
+            # Load the audio file
+            with wave.open(file_path, "r") as wav_file:
+                n_frames = wav_file.getnframes()
+                self.framerate = wav_file.getframerate()
+                n_channels = wav_file.getnchannels()
+                audio_data = wav_file.readframes(n_frames)
+
+            # Convert audio data to numpy array
+            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
+
+            # If the audio has multiple channels, use only the first channel
+            if n_channels > 1:
+                audio_samples = audio_samples[::n_channels]
 
             # Simulated RT60 Low calculation (using simple decay analysis for demonstration)
             # Assume low frequencies are the first 20% of the FFT spectrum
@@ -293,23 +313,11 @@ class audioLoader:
         Displays the waveform of the .wav file in the GUI.
         """
         try:
-            # Read the WAV file
-            with wave.open(file_path, "r") as wav_file:
-                n_frames = wav_file.getnframes()
-                n_channels = wav_file.getnchannels()
-                framerate = wav_file.getframerate()
-                audio_data = wav_file.readframes(n_frames)
-
-            # Convert audio data to numpy array
-            audio_samples = np.frombuffer(audio_data, dtype=np.int16)
-
-            # If the audio has multiple channels, take the first one
-            if n_channels > 1:
-                audio_samples = audio_samples[::n_channels]
+            audio_samples = self.audio_samples
 
             # Create the waveform plot with a larger figure size
             fig, ax = plt.subplots(figsize=(12, 6))  # Adjusted figure size
-            time_axis = np.linspace(0, len(audio_samples) / framerate, num=len(audio_samples))
+            time_axis = np.linspace(0, len(audio_samples) / self.framerate, num=len(audio_samples))
             ax.plot(time_axis, audio_samples, color="blue")
             ax.set_title("Waveform", fontsize=16)
             ax.set_xlabel("Time (s)", fontsize=12)
