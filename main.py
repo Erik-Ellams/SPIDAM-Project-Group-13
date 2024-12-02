@@ -465,6 +465,8 @@ class audioLoader:
             time = np.linspace(0, len(fft_result), len(fft_result))
             ax.plot(time, fft_result, color="blue")
             ax.set_title("RT60 Reverb Frequency", fontsize=16)
+            ax.set_xlabel("Time (cs)", fontsize=12)
+            ax.set_ylabel("Amplitude (dB)", fontsize=12)
 
             # Embed the plot in the Tkinter GUI
             canvas = FigureCanvasTkAgg(fig, master=self.waveform_frame)
