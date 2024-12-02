@@ -118,6 +118,7 @@ class audioLoader:
             # Start the processing chain
             output_path = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
             self.convert_to_wav(file_path, output_path)
+            self.display_waveform(self.destination_file)
         else:
             self.notification_var.set("No file selected!")
 
@@ -147,6 +148,8 @@ class audioLoader:
 
             subprocess.run(["ffmpeg", "-y", "-i", source_file, "-map_metadata", "-1", destination_file], check=True)
             self.notification_var.set("Metadata removed.")
+
+            self.destination_file = destination_file
 
             # Proceed to get duration
             self.get_duration(destination_file)
