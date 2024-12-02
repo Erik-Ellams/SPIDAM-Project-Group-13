@@ -65,11 +65,11 @@ class audioLoader:
         RT60MID_button.grid(row=4, column=2, pady=10)
 
         # Create a "Load RT60 HIGH" button
-        RT60HIGH_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
+        RT60HIGH_button = tk.Button(window, text="RT60 HIGH Plot", command=lambda: self.display_rt60("high"))
         RT60HIGH_button.grid(row=4, column=3, pady=10)
 
         # Create a "Load RT60 HIGH" button
-        Combine_plots_button = tk.Button(window, text="Load RT60 HIGH Plot", command=lambda: self.display_combined())
+        Combine_plots_button = tk.Button(window, text="Load Combined RT60 Plot", command=lambda: self.display_combined())
         Combine_plots_button.grid(row=4, column=4, pady=10)
 
     def _create_result_frames(self):
@@ -324,7 +324,7 @@ class audioLoader:
             time_axis = np.linspace(0, len(audio_samples) / self.framerate, num=len(audio_samples))
             ax.plot(time_axis, audio_samples, color="blue")
             ax.set_title("Waveform", fontsize=16)
-            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_xlabel("Time (cs)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
             ax.grid(True)  # Optional: Add a grid for better readability
 
@@ -374,7 +374,7 @@ class audioLoader:
                 ax.plot(time, high_freq_fft, color="blue")
                 ax.set_title("RT60 High Frequency", fontsize=16)
 
-            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_xlabel("Time (cs)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
             ax.grid(True)  # Optional: Add a grid for better readability
 
@@ -411,7 +411,7 @@ class audioLoader:
             ax.plot(time, high_freq_fft, color="blue")
 
             ax.set_title("Combined RT60 Plot", fontsize=16)
-            ax.set_xlabel("Time (s)", fontsize=12)
+            ax.set_xlabel("Time (cs)", fontsize=12)
             ax.set_ylabel("Amplitude (dB)", fontsize=12)
             ax.grid(True)  # Optional: Add a grid for better readability
 
