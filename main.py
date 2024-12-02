@@ -90,6 +90,9 @@ class audioLoader:
         return label
 
     def _create_notification_bar(self):
+        notification_title = tk.Label(self.window, text="Notification Bar", font=("Arial", 10, "bold"))
+        notification_title.grid(row=9, column=0, columnspan=4, sticky="ew")
+
         notification_frame = tk.Frame(self.window, relief=tk.SUNKEN, bd=1)
         notification_frame.grid(row=10, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
 
